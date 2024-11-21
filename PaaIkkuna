@@ -24,8 +24,8 @@ def main():
     tulotmenot_painike.pack()
 
     # Lisää sulkupainike
-    #sulje_painike = tk.Button(root, text="Sulje", command=root.quit)
-    #sulje_painike.pack()
+    sulje_painike = tk.Button(root, text="Sulje", command=root.destroy)
+    sulje_painike.pack()
 
     # Käynnistä pääsilmukka
     root.mainloop()
