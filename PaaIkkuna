@@ -1,0 +1,28 @@
+import tkinter as tk
+from tkinter import messagebox
+
+
+def main():
+    # Luo pääikkuna
+    root = tk.Tk()
+    root.title("Tulot ja Menot")
+
+    # Lisää käyttöliittymäelementtejä
+    aloi = tk.Label(root, text="Tervetuloa Tulot ja Menot -ohjelmaan!")
+    aloi.pack()
+
+   # Lisää tekstilaatikko
+    tekstilaatikko = tk.Text(root, width=40, height=10)
+    tekstilaatikko.pack()
+    
+    # Lisää sulkupainike
+    sulje_painike = tk.Button(root, text="Sulje", command=root.quit)
+    sulje_painike.pack()
+
+    # Käynnistä pääsilmukka
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
+    
+import TulotMenot
