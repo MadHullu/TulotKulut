@@ -28,5 +28,11 @@ menot_text.grid(row=1, column=1, padx=5, pady=5)
 tulot_menot_text = tk.Text(frame, height=1, width=20)
 tulot_menot_text.grid(row=1, column=2, padx=5, pady=5)
 
+# Lisää sulkupainike
+sulje_painike = tk.Button(root, text="Sulje", command=root.destroy)
+sulje_painike.pack()
+
+
 # Käynnistä pääsilmukka 
 root.mainloop()
+
