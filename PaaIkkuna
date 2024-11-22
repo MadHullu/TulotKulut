@@ -2,6 +2,10 @@ import tkinter as tk
 from tkinter import messagebox
 import importlib
 
+#Tarkoitus olisi tehdä tälle sivulle pääikkuna, josta käyttäjä voi valita haluamansa ohjelman, mitä käyttää.
+
+#Kun tulot ja menot on suljettu, niin ei päästä takaisin tälle sivulle, vaakaatuu
+
 def tuo_tulotmenot():
     TulotMenot = importlib.import_module('TulotMenot')
     TulotMenot.main()
