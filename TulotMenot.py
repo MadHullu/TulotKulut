@@ -5,9 +5,27 @@ from tkinter import simpledialog, messagebox
 #Etsi virhe, mikä aiheuttaa pääohjelman lopettamisen, kun tämä ohjelma suljetaan
 
 
+import tkinter as tk
+from tkinter import simpledialog, messagebox
+
 def main():
     root = tk.Tk()
     root.title("Tulot ja Menot")
+
+    # Luo valikkopalkki....miten määritellä valikkopalkin koko
+    menubar = tk.Menu(root, font=("Helvetica", 14))
+
+    # Luo alasvetovalikko
+    menu = tk.Menu(menubar, tearoff=0, font=("Helvetica", 14))
+    menu.add_command(label="Lataa", command=lambda: messagebox.showinfo("Lataa", "Lataa toiminto valittu"))
+    menu.add_command(label="Tallenna", command=lambda: messagebox.showinfo("Tallenna", "Tallenna toiminto valittu"))
+    menu.add_command(label="Ohje", command=lambda: messagebox.showinfo("Ohje", "Ohje toiminto valittu"))
+
+    # Lisää alasvetovalikko valikkopalkkiin
+    menubar.add_cascade(label="...", menu=menu)
+
+    # Aseta valikkopalkki ikkunaan
+    root.config(menu=menubar)
 
     # Luo kehys tekstilaatikoille
     frame = tk.Frame(root)
@@ -49,7 +67,7 @@ def main():
     # Funktio, joka kysyy käyttäjältä tulojen tai menojen nimen ja arvon ja lisää ne tekstikenttään
     def kysy_ja_lisaa_teksti():
         nimi = simpledialog.askstring("Syötä nimi", "Anna tulojen tai menojen nimi:")
-        arvo_str = simpledialog.askstring("Syötä arvo", "Anna tulojen tai menojen arvo (menot miinus merkillä):")
+        arvo_str = simpledialog.askstring("Syötä arvo", "Anna tulo tai meno (-) euromääräinen arvo:")
         if nimi is not None and arvo_str is not None:
             try:
                 arvo = float(arvo_str.replace(',', '.'))
@@ -73,7 +91,7 @@ def main():
                 messagebox.showerror("Virhe", "Syötetty arvo ei ole kelvollinen numero.")
 
     # Lisää kysymys-painike
-    kysymys_painike = tk.Button(root, text="Lisää tuloja tai menoja", command=kysy_ja_lisaa_teksti)
+    kysymys_painike = tk.Button(root, text="Lisää Tulo tai Meno", command=kysy_ja_lisaa_teksti)
     kysymys_painike.pack()
 
     # Lisää sulkupainike

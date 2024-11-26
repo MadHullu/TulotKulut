@@ -4,7 +4,11 @@ import importlib
 
 #Tarkoitus olisi tehdä tälle sivulle pääikkuna, josta käyttäjä voi valita haluamansa ohjelman, mitä käyttää.
 
-#Kun tulot ja menot on suljettu, niin ei päästä takaisin tälle sivulle, vaakaatuu
+import tkinter as tk
+from tkinter import messagebox
+import importlib
+
+# Tarkoitus olisi tehdä tälle sivulle pääikkuna, josta käyttäjä voi valita haluamansa ohjelman, mitä käyttää.
 
 def tuo_tulotmenot():
     TulotMenot = importlib.import_module('TulotMenot')
@@ -13,7 +17,7 @@ def tuo_tulotmenot():
 def main():
     # Luo pääikkuna
     root = tk.Tk()
-    root.title("Tulot ja Menot")
+    root.title("Pääikkuna")
 
     # Lisää käyttöliittymäelementtejä
     aloi = tk.Label(root, text="Tervetuloa Tulot ja Menot -ohjelmaan!")
@@ -36,6 +40,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
- 
-    
