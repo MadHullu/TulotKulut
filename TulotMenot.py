@@ -1,18 +1,11 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 
-#jos painetaan cancel, niin lisää if lauseke, joka tarkistaa onko nimi ja arvo None, jos on niin ei tee mitään
-#Etsi virhe, mikä aiheuttaa pääohjelman lopettamisen, kun tämä ohjelma suljetaan
-
-
-import tkinter as tk
-from tkinter import simpledialog, messagebox
-
 def main():
     root = tk.Tk()
     root.title("Tulot ja Menot")
 
-    # Luo valikkopalkki....miten määritellä valikkopalkin koko
+    # Luo valikkopalkki
     menubar = tk.Menu(root, font=("Helvetica", 14))
 
     # Luo alasvetovalikko
@@ -67,7 +60,7 @@ def main():
     # Funktio, joka kysyy käyttäjältä tulojen tai menojen nimen ja arvon ja lisää ne tekstikenttään
     def kysy_ja_lisaa_teksti():
         nimi = simpledialog.askstring("Syötä nimi", "Anna tulojen tai menojen nimi:")
-        arvo_str = simpledialog.askstring("Syötä arvo", "Anna tulo tai meno (-) euromääräinen arvo:")
+        arvo_str = simpledialog.askstring("Syötä arvo", "Anna tulojen tai menojen arvo (käytä pilkkua desimaalierottimena):")
         if nimi is not None and arvo_str is not None:
             try:
                 arvo = float(arvo_str.replace(',', '.'))
@@ -90,9 +83,39 @@ def main():
             except ValueError:
                 messagebox.showerror("Virhe", "Syötetty arvo ei ole kelvollinen numero.")
 
+    # Funktio, joka poistaa valitun tulon tai menon
+    def poista_tulo_tai_meno():
+        valinta = simpledialog.askstring("Poista", "Anna poistettavan tulojen tai menojen nimi:")
+        if valinta:
+            tulot_rivit = tulot_text.get("1.0", tk.END).splitlines()
+            menot_rivit = menot_text.get("1.0", tk.END).splitlines()
+            tulot_text.delete("1.0", tk.END)
+            menot_text.delete("1.0", tk.END)
+            for rivi in tulot_rivit:
+                if not rivi.startswith(valinta):
+                    tulot_text.insert(tk.END, rivi + "\n")
+            for rivi in menot_rivit:
+                if not rivi.startswith(valinta):
+                    menot_text.insert(tk.END, rivi + "\n")
+            try:
+                tulot_sum = sum(float(line.split(": ")[1].replace('€', '').replace(',', '.')) for line in tulot_text.get("1.0", tk.END).splitlines() if line.strip())
+                menot_sum = sum(float(line.split(": ")[1].replace('€', '').replace(',', '.')) for line in menot_text.get("1.0", tk.END).splitlines() if line.strip())
+                tulot_menot_text.delete(1.0, tk.END)
+                tulot_menot_text.insert(tk.END, f"{tulot_sum + menot_sum:.2f}".replace('.', ',') + "€")
+                tulot_sum_text.delete(1.0, tk.END)
+                tulot_sum_text.insert(tk.END, f"{tulot_sum:.2f}".replace('.', ',') + "€")
+                menot_sum_text.delete(1.0, tk.END)
+                menot_sum_text.insert(tk.END, f"{menot_sum:.2f}".replace('.', ',') + "€")
+            except ValueError:
+                messagebox.showerror("Virhe", "Syötetyt arvot eivät ole kelvollisia numeroita.")
+
     # Lisää kysymys-painike
     kysymys_painike = tk.Button(root, text="Lisää Tulo tai Meno", command=kysy_ja_lisaa_teksti)
     kysymys_painike.pack()
+
+    # Lisää poista-painike
+    poista_painike = tk.Button(root, text="Poista Tulo tai Meno", command=poista_tulo_tai_meno)
+    poista_painike.pack()
 
     # Lisää sulkupainike
     sulje_painike = tk.Button(root, text="Sulje", command=root.destroy)
