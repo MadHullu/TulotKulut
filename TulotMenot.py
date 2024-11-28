@@ -36,16 +36,29 @@ def main():
     tulot_menot_label.grid(row=0, column=2, padx=5, pady=5)
 
     # Luo tekstilaatikot
-    tulot_text = tk.Text(frame, height=10, width=20, bg="white", state="disabled")
+    tulot_text = tk.Text(frame, height=10, width=20, bg="white", state="normal")
     tulot_text.grid(row=1, column=0, padx=5, pady=5)
 
-    menot_text = tk.Text(frame, height=10, width=20, bg="white", state="disabled")
+    menot_text = tk.Text(frame, height=10, width=20, bg="white", state="normal")
     menot_text.grid(row=1, column=1, padx=5, pady=5)
 
-    tulot_menot_text = tk.Text(frame, height=1, width=20, bg="white", state="disabled")
+    tulot_menot_text = tk.Text(frame, height=1, width=20, bg="white", state="normal")
     tulot_menot_text.grid(row=1, column=2, padx=5, pady=5)
-    tulot_menot_text.config(state="normal")
     tulot_menot_text.insert(tk.END, "0,00€")
+
+    # Poista tyhjät rivit tekstikentistä
+    def poista_tyhjat_rivit(teksti_kentta):
+        rivit = teksti_kentta.get("1.0", tk.END).splitlines()
+        teksti_kentta.delete("1.0", tk.END)
+        for rivi in rivit:
+            if rivi.strip():
+                teksti_kentta.insert(tk.END, rivi + "\n")
+
+    poista_tyhjat_rivit(tulot_text)
+    poista_tyhjat_rivit(menot_text)
+
+    tulot_text.config(state="disabled")
+    menot_text.config(state="disabled")
     tulot_menot_text.config(state="disabled")
 
     # Luo yhteensä tekstikentät
@@ -168,7 +181,7 @@ def main():
         if valinta:
             root.after(1, lambda: root.focus_force())
             root.after(1, lambda: root.focus_get().focus_set())
-        if valinta:
+        if valinta is not None:
             tulot_rivit = tulot_text.get("1.0", tk.END).splitlines()
             menot_rivit = menot_text.get("1.0", tk.END).splitlines()
             tulot_text.config(state="normal")
