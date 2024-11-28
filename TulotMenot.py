@@ -1,5 +1,9 @@
+# Kun ladataan teksti tiedosto, ohjelma ei osaa laskea tulojen ja menojen eroa oikein.
+# bug tekstikentät ei osaa poistaa tyhjiä rivejä
+
 import tkinter as tk
-from tkinter import simpledialog, messagebox
+from tkinter import simpledialog, messagebox, filedialog, scrolledtext
+from datetime import datetime
 
 def main():
     root = tk.Tk()
@@ -11,8 +15,54 @@ def main():
 
     # Luo alasvetovalikko
     menu = tk.Menu(menubar, tearoff=0, font=("Helvetica", 14))
-    menu.add_command(label="Lataa", command=lambda: messagebox.showinfo("Lataa", "Lataa toiminto valittu"))
-    menu.add_command(label="Tallenna", command=lambda: messagebox.showinfo("Tallenna", "Tallenna toiminto valittu"))
+
+    def lataa_tiedot():
+        tiedosto = filedialog.askopenfilename(title="Valitse tiedosto", filetypes=(("Text files", "*.txt"), ("All files", "*.*")))
+        if tiedosto:
+            try:
+                with open(tiedosto, 'r', encoding='utf-8') as f:
+                    data = f.readlines()
+                    tulot_text.config(state="normal")
+                    menot_text.config(state="normal")
+                    tavoite_text.config(state="normal")
+                    tulot_text.delete("1.0", tk.END)
+                    menot_text.delete("1.0", tk.END)
+                    tavoite_text.delete("1.0", tk.END)
+                    tulot_osa = True
+                    for rivi in data:
+                        if rivi.strip() == "MENOT":
+                            tulot_osa = False
+                            continue
+                        if rivi.strip() == "TAVOITE":
+                            tavoite_text.insert(tk.END, data[data.index(rivi) + 1])
+                            break
+                        if tulot_osa:
+                            tulot_text.insert(tk.END, rivi)
+                        else:
+                            menot_text.insert(tk.END, rivi)
+                    tulot_text.config(state="disabled")
+                    menot_text.config(state="disabled")
+                    tavoite_text.config(state="disabled")
+                    paivita_tavoite_ero()
+            except Exception as e:
+                messagebox.showerror("Virhe", f"Tiedoston lataaminen epäonnistui: {e}")
+
+    def tallenna_tiedot():
+        tiedosto = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=(("Text files", "*.txt"), ("All files", "*.*")))
+        if tiedosto:
+            try:
+                with open(tiedosto, 'w', encoding='utf-8') as f:
+                    f.write(tulot_text.get("1.0", tk.END))
+                    f.write("MENOT\n")
+                    f.write(menot_text.get("1.0", tk.END))
+                    f.write("TAVOITE\n")
+                    f.write(tavoite_text.get("1.0", tk.END))
+                messagebox.showinfo("Tallennus onnistui", "Tiedot tallennettiin onnistuneesti.")
+            except Exception as e:
+                messagebox.showerror("Virhe", f"Tiedoston tallentaminen epäonnistui: {e}")
+
+    menu.add_command(label="Lataa", command=lataa_tiedot)
+    menu.add_command(label="Tallenna", command=tallenna_tiedot)
     menu.add_command(label="Ohje", command=lambda: messagebox.showinfo("Ohje", "Ohje toiminto valittu"))
 
     # Lisää alasvetovalikko valikkopalkkiin
@@ -27,23 +77,23 @@ def main():
 
     # Luo otsikot
     tulot_label = tk.Label(frame, text="Tulot", bg="lightblue")
-    tulot_label.grid(row=0, column=0, padx=5, pady=5)
+    tulot_label.grid(row=0, column=0, padx=40, pady=5)
 
     menot_label = tk.Label(frame, text="Menot", bg="lightblue")
-    menot_label.grid(row=0, column=1, padx=5, pady=5)
+    menot_label.grid(row=0, column=1, padx=40, pady=5)
 
     tulot_menot_label = tk.Label(frame, text="Tulot-Menot", bg="lightblue")
-    tulot_menot_label.grid(row=0, column=2, padx=5, pady=5)
+    tulot_menot_label.grid(row=0, column=2, padx=40, pady=5)
 
     # Luo tekstilaatikot
-    tulot_text = tk.Text(frame, height=10, width=20, bg="white", state="normal")
-    tulot_text.grid(row=1, column=0, padx=5, pady=5)
+    tulot_text = scrolledtext.ScrolledText(frame, height=10, width=50, bg="white", state="normal")
+    tulot_text.grid(row=1, column=0, padx=40, pady=5)
 
-    menot_text = tk.Text(frame, height=10, width=20, bg="white", state="normal")
-    menot_text.grid(row=1, column=1, padx=5, pady=5)
+    menot_text = tk.Text(frame, height=10, width=50, bg="white", state="normal")
+    menot_text.grid(row=1, column=1, padx=40, pady=5)
 
     tulot_menot_text = tk.Text(frame, height=1, width=20, bg="white", state="normal")
-    tulot_menot_text.grid(row=1, column=2, padx=5, pady=5)
+    tulot_menot_text.grid(row=1, column=2, padx=40, pady=5)
     tulot_menot_text.insert(tk.END, "0,00€")
 
     # Poista tyhjät rivit tekstikentistä
@@ -63,39 +113,39 @@ def main():
 
     # Luo yhteensä tekstikentät
     tulot_sum_label = tk.Label(frame, text="Yhteensä Tulot", bg="lightblue")
-    tulot_sum_label.grid(row=2, column=0, padx=5, pady=5)
+    tulot_sum_label.grid(row=2, column=0, padx=40, pady=5)
 
     menot_sum_label = tk.Label(frame, text="Yhteensä Menot", bg="lightblue")
-    menot_sum_label.grid(row=2, column=1, padx=5, pady=5)
+    menot_sum_label.grid(row=2, column=1, padx=40, pady=5)
 
     tulot_sum_text = tk.Text(frame, height=1, width=20, bg="white", state="disabled")
-    tulot_sum_text.grid(row=3, column=0, padx=5, pady=5)
+    tulot_sum_text.grid(row=3, column=0, padx=40, pady=5)
     tulot_sum_text.config(state="normal")
     tulot_sum_text.insert(tk.END, "0,00€")
     tulot_sum_text.config(state="disabled")
 
     menot_sum_text = tk.Text(frame, height=1, width=20, bg="white", state="disabled")
-    menot_sum_text.grid(row=3, column=1, padx=5, pady=5)
+    menot_sum_text.grid(row=3, column=1, padx=40, pady=5)
     menot_sum_text.config(state="normal")
     menot_sum_text.insert(tk.END, "0,00€")
     menot_sum_text.config(state="disabled")
 
     # Luo Tavoite-otsikko ja tekstikenttä tulot_menot-sarakkeeseen
     tavoite_label = tk.Label(frame, text="Tavoite", bg="lightblue")
-    tavoite_label.grid(row=2, column=2, padx=5, pady=5)
+    tavoite_label.grid(row=2, column=2, padx=40, pady=5)
 
-    tavoite_text = tk.Text(frame, height=1, width=20, bg="white", state="disabled")
-    tavoite_text.grid(row=3, column=2, padx=5, pady=5)
+    tavoite_text = tk.Text(frame, height=1, width=20, bg="white", state="normal")
+    tavoite_text.grid(row=3, column=2, padx=40, pady=5)
     tavoite_text.config(state="normal")
     tavoite_text.insert(tk.END, "0,00€")
     tavoite_text.config(state="disabled")
 
     # Luo Tavoite-ero otsikko ja tekstikenttä
     tavoite_ero_label = tk.Label(frame, text="Tavoiteesta:", bg="lightblue")
-    tavoite_ero_label.grid(row=5, column=2, padx=5, pady=5)
+    tavoite_ero_label.grid(row=5, column=2, padx=40, pady=5)
 
     tavoite_ero_text = tk.Text(frame, height=1, width=20, bg="white", state="disabled")
-    tavoite_ero_text.grid(row=6, column=2, padx=5, pady=5)
+    tavoite_ero_text.grid(row=6, column=2, padx=40, pady=5)
     tavoite_ero_text.config(state="normal")
     tavoite_ero_text.insert(tk.END, "0,00€")
     tavoite_ero_text.config(state="disabled")
@@ -130,7 +180,7 @@ def main():
                 messagebox.showerror("Virhe", "Syötetty arvo ei ole kelvollinen numero.")
 
     aseta_tavoite_painike = tk.Button(frame, text="Aseta tavoite", command=aseta_tavoite, bg="lightblue")
-    aseta_tavoite_painike.grid(row=4, column=2, padx=5, pady=5)
+    aseta_tavoite_painike.grid(row=4, column=2, padx=40, pady=5)
 
     # Funktio, joka kysyy käyttäjältä tulojen tai menojen nimen ja arvon ja lisää ne tekstikenttään
     def kysy_ja_lisaa_teksti():
@@ -146,13 +196,14 @@ def main():
             try:
                 arvo = float(arvo_str.replace(',', '.'))
                 arvo_str = f"{arvo:.2f}".replace('.', ',') + "€"
+                paivays = datetime.now().strftime("%d.%m.")
                 if arvo < 0:
                     menot_text.config(state="normal")
-                    menot_text.insert(tk.END, f"{nimi}: {arvo_str}\n")
+                    menot_text.insert(tk.END, f"{paivays} {nimi}: {arvo_str}\n")
                     menot_text.config(state="disabled")
                 else:
                     tulot_text.config(state="normal")
-                    tulot_text.insert(tk.END, f"{nimi}: {arvo_str}\n")
+                    tulot_text.insert(tk.END, f"{paivays} {nimi}: {arvo_str}\n")
                     tulot_text.config(state="disabled")
                 try:
                     tulot_sum = sum(float(line.split(": ")[1].replace('€', '').replace(',', '.')) for line in tulot_text.get("1.0", tk.END).splitlines() if line.strip())
@@ -233,11 +284,11 @@ def main():
 
     # Lisää kysymys-painike
     kysymys_painike = tk.Button(button_frame, text="Lisää Tulo tai Meno", command=kysy_ja_lisaa_teksti, bg="lightblue")
-    kysymys_painike.grid(row=0, column=0, padx=5)
+    kysymys_painike.grid(row=0, column=0, padx=40)
 
     # Lisää poista-painike
     poista_painike = tk.Button(button_frame, text="Poista Tulo tai Meno", command=poista_tulo_tai_meno, bg="lightblue")
-    poista_painike.grid(row=0, column=1, padx=5)
+    poista_painike.grid(row=0, column=1, padx=40)
 
     # Lisää sulkupainike oikeaan alakulmaan
     sulje_painike = tk.Button(root, text="Sulje", command=root.destroy, bg="lightblue")
@@ -248,3 +299,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    # TulotMenot.py
