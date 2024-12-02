@@ -94,7 +94,9 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("Secure Sites Manager")
-        self.center_window(600, 250)
+        self.center_window(800, 300)
+        
+    
         
         self.key = None
         if not os.path.exists('key.key'):
@@ -108,7 +110,7 @@ class App:
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2
         self.root.geometry(f'{width}x{height}+{x}+{y}')
-
+    
     def create_user_interface(self):
         self.clear_interface()
         tk.Label(self.root, text="Enter new user name:").pack()
@@ -127,15 +129,22 @@ class App:
         tk.Label(self.root, text="Enter user password:").pack()
         self.user_password = tk.Entry(self.root, show="*")
         self.user_password.pack()
+        tk.Label(self.root, text="").pack()  # Add an empty label for spacing
         tk.Button(self.root, text="Login", command=self.login).pack()
 
     def main_interface(self):
         self.clear_interface()
-        tk.Button(self.root, text="Add site info", command=self.add_site_interface).pack()
-        tk.Button(self.root, text="List existing sites", command=self.list_sites_interface).pack()
-        tk.Button(self.root, text="Delete site", command=self.delete_site_interface).pack()
+        tk.Label(self.root, text="").pack()  # Add an empty label for spacing
+        tk.Button(self.root, text="Add site info", command=self.add_site_interface, width=20).pack()
+        #tk.Label(self.root, text="").pack()  # Add an empty label for spacing
+        tk.Button(self.root, text="List existing sites", command=self.list_sites_interface, width=20).pack()
+        #tk.Label(self.root, text="").pack()  # Add an empty label for spacing
+        tk.Button(self.root, text="Delete site info", command=self.delete_site_interface, width=20).pack()
+        #tk.Label(self.root, text="").pack()  # Add an empty label for spacing
+        tk.Label(self.root, text="").pack()  # Add an empty label for spacing
         tk.Button(self.root, text="Exit", command=self.root.quit).pack()
 
+    
     def clear_interface(self):
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -165,19 +174,22 @@ class App:
     def add_site_interface(self):
         self.clear_interface()
         tk.Label(self.root, text="Enter site name:").pack()
-        self.site_name = tk.Entry(self.root)
+        self.site_name = tk.Entry(self.root, width=30)
         self.site_name.pack()
         tk.Label(self.root, text="Enter site URL:").pack()
-        self.site_url = tk.Entry(self.root)
+        tk.Label(self.root, text="or e.g. net use x: \\\\servername\sharename").pack()
+        self.site_url = tk.Entry(self.root, width=30)  # Set the width here
         self.site_url.pack()
         tk.Label(self.root, text="Enter site username:").pack()
-        self.site_username = tk.Entry(self.root)
+        self.site_username = tk.Entry(self.root, width=30)  # Set the width here
         self.site_username.pack()
         tk.Label(self.root, text="Enter site password:").pack()
-        tk.Label(self.root, text="or leave password empthy to create strong password automatically").pack()
-        self.site_password = tk.Entry(self.root, show="*")
+        tk.Label(self.root, text="or leave password empty to create strong password automatically").pack()
+        self.site_password = tk.Entry(self.root, show="*", width=30)  # Set the width here
         self.site_password.pack()
+        tk.Label(self.root, text="").pack()  # Add an empty label for spacing
         tk.Button(self.root, text="Add Site", command=self.add_site).pack()
+
         tk.Button(self.root, text="Back", command=self.main_interface).pack()
 
     def add_site(self):
@@ -219,7 +231,7 @@ class App:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Add headers
-        headers = ["Site Name", "URL", "Username", "Password"]
+        headers = ["Site Name", "URL/site info", "Username", "Password"]
         for col, header in enumerate(headers):
             tk.Label(scrollable_frame, text=header, font=('bold')).grid(row=0, column=col, padx=10, pady=5)
 
@@ -230,10 +242,10 @@ class App:
             site_details = [site[0], site[1], decrypted_username, decrypted_password]
             for col, detail in enumerate(site_details):
             
-                entry = tk.Entry(scrollable_frame)
-            entry.insert(0, detail)
-            entry.config(state='readonly')
-            entry.grid(row=row, column=col, padx=10, pady=5)
+                entry = tk.Entry(scrollable_frame, width=28)
+                entry.insert(0, detail)
+                entry.config(state='readonly')
+                entry.grid(row=row, column=col, padx=10, pady=5)
 
         tk.Button(self.root, text="Back", command=self.main_interface).pack()
         canvas.configure(yscrollcommand=scrollbar.set)
@@ -242,7 +254,7 @@ class App:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Add headers
-        headers = ["Site Name", "URL", "Username", "Password"]
+        headers = ["Site Name", "URL/site info", "Username", "Password"]
         for col, header in enumerate(headers):
             tk.Label(scrollable_frame, text=header, font=('bold')).grid(row=0, column=col, padx=10, pady=5)
 
@@ -252,7 +264,7 @@ class App:
             decrypted_password = decrypt_password(self.key, site[3])
             site_details = [site[0], site[1], decrypted_username, decrypted_password]
             for col, detail in enumerate(site_details):
-                entry = tk.Entry(scrollable_frame)
+                entry = tk.Entry(scrollable_frame, width=28)
                 entry.insert(0, detail)
                 entry.config(state='readonly')
                 entry.grid(row=row, column=col, padx=10, pady=5)
@@ -264,7 +276,7 @@ class App:
         tk.Label(self.root, text="Enter the site name to delete:").pack()
         self.delete_site_name = tk.Entry(self.root)
         self.delete_site_name.pack()
-        tk.Button(self.root, text="Delete Site", command=self.delete_site).pack()
+        tk.Button(self.root, text="Delete site info", command=self.delete_site).pack()
         tk.Button(self.root, text="Back", command=self.main_interface).pack()
 
     def delete_site(self):
